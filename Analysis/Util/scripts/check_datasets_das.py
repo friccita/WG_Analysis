@@ -19,10 +19,10 @@ parser.add_argument( '--notree', dest='notree',  default=False,action='store_tru
 
 options = parser.parse_args()
 
-BASE_DIR   = '/store/user/jkunkle'
-BASE_DIR   = '/eos/cms/store/user/friccita/WGammaNtuples/RawNtuples'
+#BASE_DIR   = '/store/user/jkunkle'
+BASE_DIR   = '/store/user/friccita'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-DATA_SAMPLES = ['SingleElectron', 'SingleMuon']
+DATA_SAMPLES = ['SingleElectron', 'SingleMuon', 'HLT']
 #DATA_SAMPLES = ['SingleElectron']
 RUN_YEAR = 'Run2016'
 RECO_TYPE = ['23Sep2016', 'H-PromptReco']
