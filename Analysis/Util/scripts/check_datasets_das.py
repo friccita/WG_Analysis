@@ -187,7 +187,7 @@ def main() :
     print ' Results '
     print '******************************************'
     for samp in found_samples :
-	mindiff = min([s-local_events[samp] for s in das_events[samp] if s -local_events[samp]>0])
+        mindiff = min([s-local_events[samp] for s in das_events[samp] if s -local_events[samp]>=0])
         print '%s : Orignal = %d events, filtered = %d events.  \033[1mDifference = %d\033[0m' %( samp, mindiff+local_events[samp], local_events[samp],mindiff)
 
 
