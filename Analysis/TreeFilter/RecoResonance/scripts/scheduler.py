@@ -29,7 +29,7 @@ version = 'UMDNTuple_0620'
 # signal
 version_sig = 'UMDNTuple_0703'
 # 2016 ReminiAOD data, with met filter, but the tags/selections are not updated
-version_reminiAOD = 'UMDNTuple_0807'
+version_reminiAOD = 'UMDNTuple_1114'
 
 jobs = [
         #--------------------------
@@ -49,8 +49,8 @@ jobs = [
         #JobConf(base, 'WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version), 
         #JobConf(base, 'WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version),
         #JobConf(base, 'WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version), 
-        JobConf(base, 'DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version                         ),
-        JobConf(base, 'ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8' , version=version, tags=['NLO']       ),
+        JobConf(base, 'DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version_reminiAOD                ),
+        JobConf(base, 'ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8' , version=version_reminiAOD, tags=['NLO']       ),
         #JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', version=version, tags=['NLO']     ),
         #JobConf(base, 'TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version     ),
         #JobConf(base, 'TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', version=version     ),
@@ -65,7 +65,7 @@ jobs = [
         #JobConf( base, 'WWTo2L2Nu_13TeV-powheg', version=version),
         #JobConf(base, 'WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', version=version, tags=['NLO']     ),
         #JobConf(base, 'WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', version=version, tags=['NLO']     ),
-        #JobConf(base, 'DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', tags=['NLO']),
+        JobConf(base, 'DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', version=version_reminiAOD, tags=['NLO']),
 
         #JobConf( base, 'WJetsToLNu_Wpt-0To50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', version=version),
         #JobConf( base, 'WJetsToLNu_Wpt-50To100_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', version=version),
@@ -229,7 +229,7 @@ configs = [
         'args'   : { 'function' : 'make_final_mumu', 'mu_pt' : ' > 30 ' },
         'args_tag_NLO' : args_nlo,
         'input'  : '',
-        'output' : output_base+'LepLep_mumu_2018_10_12',
+        'output' : output_base+'LepLep_mumu_2019_02_18',
         'tag'    : 'mumu',
         'keepSelection': 'muglph',
         'dataset': 'SingleMuon',
