@@ -27,7 +27,7 @@ _XSFILE   = 'cross_sections/photon16.py'
 _LUMI     = 36000
 _BASEPATH = '/afs/cern.ch/work/f/friccita/WG_Analysis/Plotting/LimitSetting/'
 #_BASEPATH = '/home/friccita/WGamma/WG_Analysis/Plotting/LimitSetting/'
-_SAMPCONF = 'Modules/Resonance.py'
+_SAMPCONF = 'Modules/Resonance2016.py'
 
 
 def get_cut_defaults( shape_var, ieta ) :
@@ -47,8 +47,8 @@ if options.outputDir is not None :
 
 def main() :
 
-    sampManMuMu = SampleManager( options.baseDirMuMu, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI )
-    sampManElEl = SampleManager( options.baseDirElEl, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI )
+    sampManMuMu = SampleManager( options.baseDirMuMu, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist" )
+    sampManElEl = SampleManager( options.baseDirElEl, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist" )
 
     sampManMuMu.ReadSamples( _SAMPCONF )
     sampManElEl.ReadSamples( _SAMPCONF )
@@ -57,7 +57,7 @@ def main() :
     sampManElEl.outputs = {}
 
     #sel_base_mu = 'mu_pt30_n==2 && mu_n==2 && m_ll < 110. && m_ll > 70. && mu_pt[0] > 50. && mu_hasTrigMatch[0] && mu_passTight[0] && mu_hasTrigMatch[1] && mu_passTight[1]'
-    sel_base_mu = 'mu_n==2 && m_ll < 130. && m_ll > 50. && mu_pt_rc[0] > 52. && mu_pt_rc[1] > 10. && mu_hasTrigMatch[0] && mu_passTight[0] && mu_hasTrigMatch[1] && mu_passTight[1]'
+    sel_base_mu = 'mu_n==2 && m_ll < 130. && m_ll > 50. && mu_pt_rc[0] > 52. && mu_pt_rc[1] > 30. && mu_hasTrigMatch[0] && mu_passTight[0] && mu_hasTrigMatch[1] && mu_passTight[1]'
 
     #eta_cuts = ['EB', 'EE']
     eta_cuts = ['EB']
