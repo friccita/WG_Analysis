@@ -60,7 +60,9 @@ def get_muon_sf(options) :
     muon_sf.add_var ('LumiGH', int_lumi_gh)
 
     muon_sf.add_var( 'FilePathTrigBCDEF', '%s/2017/MuTrigEfficienciesAndSF_RunBtoF_Nov17Nov2017.root' %base_path )
-    muon_sf.add_var( 'HistTrigBCDEF', '' )
+    muon_sf.add_var( 'HistTrigBCDEF', 'IsoMu27_PtEtaBins/pt_abseta_ratio' )
+    muon_sf.add_var( 'HistTrigBCDEFdata', 'IsoMu27_PtEtaBins/efficienciesDATA/pt_abseta_DATA' )
+    muon_sf.add_var( 'HistTrigBCDEFmc', 'IsoMu27_PtEtaBins/efficienciesMC/pt_abseta_MC' )
     #muon_sf.add_var( 'FilePathTrigGH', '' )
     #muon_sf.add_var( 'HistTrigGH', '' )
 
@@ -70,7 +72,7 @@ def get_muon_sf(options) :
     #muon_sf.add_var( 'HistIdGH', '' )
 
     muon_sf.add_var( 'FilePathIsoBCDEF', '%s/2017/RunBCDEF_mu_SF_ISO.root' %base_path )
-    muon_sf.add_var ('HistIsoBCDEF','')
+    muon_sf.add_var ('HistIsoBCDEF','NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta')
     #muon_sf.add_var( 'FilePathIsoGH', '' )
     #muon_sf.add_var ('HistIsoGH','')
 
@@ -83,11 +85,11 @@ def get_electron_sf(options) :
     electron_sf = Filter( 'AddElectronSF' )
 
     electron_sf.add_var( 'FilePathRecoHighPt', '%s/2017/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root' %base_path)
-    electron_sf.add_var( 'HistRecoHighPt', '')
+    electron_sf.add_var( 'HistRecoHighPt', 'EGamma_SF2D')
     electron_sf.add_var( 'FilePathRecoLowPt',  '%s/2017/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root' %base_path)
-    electron_sf.add_var( 'HistRecoLowPt', '')
+    electron_sf.add_var( 'HistRecoLowPt', 'EGamma_SF2D')
     electron_sf.add_var( 'FilePathCutID',      '%s/2017/2017_cutbasedID_ElectronTight.root' %base_path)
-    electron_sf.add_var( 'HistCutID', '')
+    electron_sf.add_var( 'HistCutID', 'EGamma_SF2D')
 
     return electron_sf
 
@@ -100,12 +102,12 @@ def get_photon_sf(options) :
     photon_sf.add_var( 'year', theyear)
 
     photon_sf.add_var( 'FilePathId', '%s/2017/2017_cutbasedID_PhotonsMedium.root' %base_path )
-    photon_sf.add_var( 'HistId', '' )
+    photon_sf.add_var( 'HistId', 'EGamma_SF2D' )
 
     photon_sf.add_var( 'FilePathPSveto', '%s/2017/PixelSeed_ScaleFactors_2017.root' %base_path )
-    photon_sf.add_var( 'HistPSveto', '' )
+    photon_sf.add_var( 'HistPSveto', 'Medium_ID' )
     photon_sf.add_var( 'FilePathEveto', '%s/2017/CSEV_ScaleFactors_2017.root' %base_path )
-    photon_sf.add_var( 'HistCSEveto', '' )
+    photon_sf.add_var( 'HistCSEveto', 'Medium_ID' )
     
     return photon_sf
 

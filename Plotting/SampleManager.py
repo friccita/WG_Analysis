@@ -188,7 +188,7 @@ class Sample :
         self.hist.SetLineColor( self.color )
         self.hist.SetMarkerColor( self.color )
         self.hist.SetTitle('')
-        if onthefly and not (self.isData or self.IsGroupedSample() or self.name == "__AllStack__"):
+        if onthefly and not (self.isData or self.IsGroupedSample() or self.name == "__AllStack__" or self.isRatio==True):
             #scale = self.cross_section*self.lumi/self.total_events_onthefly
             #analysis_utils.scale_calc(self.cross_section, self.lumi, self.total_events_onthefly, self.gen_eff, self.k_factor)
             scale = self.scale_calc() 
@@ -2256,7 +2256,7 @@ class SampleManager :
 
         self.MakeStack(draw_config, useModel, treeHist, treeSelection )
 
-        self.DrawCanvas(self.curr_stack, draw_config, datahists=['Data'], sighists=self.get_signal_samples())
+        self.DrawCanvas(self.curr_stack, draw_config, datahists=['Data'], sighists=self.get_signal_samples(), errhists = ["__AllStack__"] )
 
     def Draw3DProjections(self, varexp, selection, histpars=None, x_by_y_bin_vals={}, doratio=False, ylabel=None, xlabel=None, rlabel=None, logy=False, ymin=None, ymax=None, ymax_scale=None, rmin=None, rmax=None, showBackgroundTotal=False, backgroundLabel='AllBkg', removeFromBkg=[], addToBkg=[], useModel=False, treeHist=None, treeSelection=None, labelStyle=None, extra_label=None, extra_label_loc=None, generate_data_from_sample=None, replace_selection_for_sample={}, legendConfig=None  ) :
 
@@ -3373,7 +3373,7 @@ class SampleManager :
                 if not ymaxdef: ymax *= pow(ymax/ymin,ymax_scale-1)
                 if not ymindef: ymin *= pow(ymax/ymin,0.9-1)
             else :
-                if not ymaxdef: ymax += (ymax-ymin)*ymax_scale
+                if not ymaxdef: ymax += (ymax-ymin)*(ymax_scale-1)
 
         print maxarray, minarray, ymin, ymax
         return (ymin, ymax)
@@ -3484,7 +3484,7 @@ class SampleManager :
                    print "No stack found"
            return
 
-    def get_stack_count(self, integralrange = None, sort =True, includeData=False, isActive = True, acceptance = False):
+    def get_stack_count(self, integralrange = None, sort =True, includeData=False, isActive = True, acceptance = False, dolatex = False):
         """ integralrange: ntuple: x bin range to be integrated """
         err = array('d',[0])
         ranger  = lambda h, e, r: [0,h.GetNbinsX(),e] # when r is none
@@ -3495,27 +3495,30 @@ class SampleManager :
 
         if acceptance:
             ### to calculate acceptance, divide by overall normalization of the sample
-            result = [(s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange))/ s.nevt_calc() ,err[0]/ s.nevt_calc()))\
+            result = [(s.legendName if dolatex else s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange))/ s.nevt_calc() ,err[0]/ s.nevt_calc()))\
                          for s in self.get_samples(isActive=isActive,isData=False) if s.name != "ratio" and s.hist]
         else:
-            result = [(s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange)),err[0]))\
+            result = [(s.legendName if dolatex else s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange)),err[0]))\
                          for s in self.get_samples(isActive=isActive,isData=False) if s.name != "ratio" and s.hist]
 
         if sort: result.sort(key=lambda x: -x[1][0])
         htotal = self.get_stack_aggregate()
 
-        if includeData: result += [(s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange)),err[0]))\
+        if includeData:
+                result += [(s.name,(s.hist.IntegralAndError(*ranger(s.hist,err,integralrange)),err[0]))\
                          for s in self.get_samples(isActive=True,isData=True)]
-        if htotal: result.append(("TOTAL",(htotal.IntegralAndError(\
+        if htotal and not acceptance:
+                result.append(("TOTAL",(htotal.IntegralAndError(\
                         *ranger(htotal,err,integralrange)), err[0])))
         resultdict = OrderedDict(result)
         return resultdict
 
     def print_stack_count(self, integralrange = None, dolatex=False, **kwargs):
-        result = self.get_stack_count(integralrange, **kwargs).items()
+        result = self.get_stack_count(integralrange, dolatex = dolatex, **kwargs).items()
         if dolatex:
             #result = [ (r1,)+tuple(map(latex_float,r2)) for r1, r2 in result]
-            result = [ (r1.replace("gamma","\\gamma ").replace("Gamma","\\gamma ").replace("\\gamma$$\\gamma","\\gamma\\gamma"),
+            #result = [ (r1.replace("gamma","\\gamma ").replace("Gamma","\\gamma ").replace("\\gamma$$\\gamma","\\gamma\\gamma"),
+            result = [ (r1.replace("#","\\"),
                         latex_float(*r2)) for r1, r2 in result]
             printline = ""
             for r in result[:-1]: printline+= "%20s & %s\\\\\n" %r
@@ -3621,6 +3624,8 @@ class SampleManager :
         if errhists :
             errsamps = self.get_samples(name=errhists )
             for samp in errsamps :
+                if not hasattr(samp,"graph") and hasattr(samp, "hist"):
+                    samp.graph = ROOT.TGraphErrors(samp.hist)
                 samp.graph.SetFillStyle(3004)
                 samp.graph.SetFillColor(ROOT.kBlack)
                 samp.graph.Draw('2same')

@@ -21,13 +21,14 @@ options = parser.parse_args()
 
 _TREENAME = 'UMDNTuple/EventTree'
 _FILENAME = 'tree.root'
-datestr   = "2019_09_15"
+datestr   = "2019_10_04_beta"
 
 if options.year == 2016:
     _XSFILE   = 'cross_sections/photon16.py'
     _LUMI     = 36000
-    _SAMPCONF = 'Modules/Resonance.py'
+    _SAMPCONF = 'Modules/Resonance2016.py'
 elif options.year == 2017:
+    #datestr   = "2019_09_15"
     _SAMPCONF = 'Modules/Resonance2017.py'
     _XSFILE   = 'cross_sections/photon17.py'
     _LUMI     = 41000
@@ -66,8 +67,11 @@ ltmet = '&&met_pt<25'
 gtmet = '&&met_pt>25'
 phpt50 = "&&ph_pt[0]>50"
 phpt80 = "&&ph_pt[0]>80"
+elpt40 = "&&el_pt[0]>40"
+eleta2p1 = "&&abs(el_eta[0])<2.1"
 invZ = '&& abs(m_lep_ph-91)>15'
 weight="PUWeight*NLOWeight"
+pi = 3.1416
 
 
 def main() :
@@ -76,21 +80,36 @@ def main() :
     sampManElG, sampManMuG = None, None
     sampManMuG= SampleManager( options.baseDirMuG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, readHists=False , weightHistName = "weighthist")
     sampManMuG.ReadSamples( _SAMPCONF )
-    #sampManElG= SampleManager( options.baseDirElG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI ,readHists=False , weightHistName = "weighthist")
-    #sampManElG.ReadSamples( _SAMPCONF )
+    sampManElG= SampleManager( options.baseDirElG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI ,readHists=False , weightHistName = "weighthist")
+    sampManElG.ReadSamples( _SAMPCONF )
     #samples = sampManMuG
+    plotvarsbase = [# ("mt_lep_met_ph",(100,0,2000)),
+                 ("p_{T}(#gamma)","ph_pt[0]"     ,(100,50,550)),
+                 ("#eta(#gamma)","ph_eta[0]"    ,(100,-3,3)),
+                 ("#phi(#gamma)","ph_phi[0]"    ,(100,-pi,pi)),
+                 ("MET"         ,"met_pt"       ,(100,0,500)),
+                 ("MET #phi"    ,"met_phi"      ,(100,-pi,pi)),
+                ]
+    plotvarsel=[ ("p_{T}(e)"    ,"el_pt[0]"     ,(100,0,500)),
+                 ("#eta(e)"     ,"el_eta[0]"    ,(100,-3,3)),
+                 ("#phi(e)"     ,"el_phi[0]"    ,(100,-pi,pi)),
+                 ]
+    plotvarsmu=[ ("p_{T}(#mu)"  ,"mu_pt[0]"     ,(100,0,500)),
+                 ("#eta(#mu)"   ,"mu_eta[0]"    ,(100,-3,3)),
+                 ("#phi(#mu)"   ,"mu_phi[0]"    ,(100,-pi,pi)),
+                 ]
 
-    #for ch, samples in zip(["mu","el"],[sampManMuG,sampManElG]):
+    for ch, samples in zip(["mu","el"],[sampManMuG,sampManElG]):
     #for ch, samples in [("el",sampManElG),]:
-    for ch, samples in [("mu",sampManMuG),]:
+    #for ch, samples in [("mu",sampManMuG),]:
         labelname = "%i Muon Channel" %options.year if ch == "mu" else "%i Electron Channel" %options.year
         #labelname+=" scaled to 2016 luminosity"
-        if ch == "el": selection = baseel + ph_eb + gtmet + invZ + passpix + phpt80 + "&&el_passVIDTight[0] && ph_passVIDMedium[0]"
-        if ch == "mu": selection = basemu + ph_eb + gtmet  + passpix + phpt80 + "&& mu_passTight[0] && ph_passVIDMedium[0]"
+        if ch == "el": selection = baseel + ph_eb + gtmet + invZ + passcsev + phpt80 + "&&el_passTight[0] && ph_passMedium[0]" + elpt40 + eleta2p1
+        if ch == "mu": selection = basemu + ph_eb + gtmet  + passpix + phpt80 + "&& mu_passTight[0] && ph_passVIDMedium[0]" 
 
 
         ## prepare config
-        hist_config   = {"xlabel":"m_{T}(e,#gamma,p^{miss}_{T})","logy":1,"ymin":.1,"weight":weight} ## "unblind":False
+        hist_config   = {"xlabel":"m_{T}(e,#gamma,p^{miss}_{T})","logy":1,"ymin":.1,"weight":weight, "ymax_scale":1.5} ## "unblind":False
         label_config  = {"extra_label":labelname, "extra_label_loc":(.17,.82), "labelstyle":options.year}
         legend_config = {'legendLoc':"Double","legendTranslateX":0.35, "legendCompress":.9, "fillalpha":.5}
 
@@ -103,6 +122,17 @@ def main() :
         samples.print_stack_count(acceptance=True)
         samples.print_stack_count(dolatex=True)
         samples.print_stack_count(dolatex=True,acceptance=True)
+
+        if ch == "el":
+            plotvars = plotvarsbase+plotvarsel
+        if ch == "mu":
+            plotvars = plotvarsbase+plotvarsmu
+        for xlabel, var, vrange in plotvars:
+            hist_config["xlabel"] = xlabel
+            samples.Draw(var, selection,vrange , hist_config,legend_config,label_config)
+            ## save histogram
+            varname = var.replace("[","").replace("]","")
+            samples.SaveStack("%sSIGSEL%i%ssamelumi.pdf" %(varname,options.year, ch), options.outputDir, "base")
     return sampManMuG, sampManElG
 
 
