@@ -179,14 +179,11 @@ def main() :
     lepg_samps = { 'mu' : sampManMuG, 'el' : sampManElG }
     #lepg_samps = {'mu' : sampManMuG }
 
-    for seltag, chdic in selections.iteritems() :
+    for seltag, chdic in selections.iteritems() : 
 
-        print "seltag: ",seltag ,"chdic: ", chdic
-        for ch, seldic in chdic.iteritems() :
-
-            print "ch:", ch,"seldic",seldic
+        for ch, seldic in chdic.iteritems() : 
+                                    
             for name, vardata in kine_vars.iteritems() :
-                print "name",name,"vardata", vardata#['signal_binning']
 
                 make_signal_fits( lepg_samps[ch], seldic['selection'], eta_cuts, vardata['var'], vardata['xvar'], vardata['signal_binning'], workspaces_to_save, suffix='%s_%s_%s'%(ch,name,seltag ), plots_dir = options.outputDir + "/plots")
 
@@ -228,6 +225,7 @@ def make_signal_fits( sampMan, sel_base, eta_cuts, plot_var, xvar, binning, work
         else :
 
             mass = float(res.group(2))
+            
             iwidth = 0
             if samp.name.count( 'width0p01' ) :
                 width = 0.0001
@@ -238,16 +236,18 @@ def make_signal_fits( sampMan, sel_base, eta_cuts, plot_var, xvar, binning, work
                 wid = res2.group(3)
                 iwidth = 1
 
+        #if mass != 400:
+        #   continue
+        #if mass != 300 : 
+        #   continue
         if samp.name.count( 'MadGraph' ) == 0:
            continue
+        #if width != 0.05:
+        #   continue
         if mass > 2000 or mass < 300:
            continue
-        if iwidth >=len(binning):
-           print "exclude", iwidth, binning
-           continue
-        if mass not in binning[iwidth]:
-           print "exclude mass", mass, binning[iwidth]
-           continue
+        #if mass != 1200:
+        #   continue
 
         #ph_selection_sr = '%s==1' %defs.get_phid_selection('all')
         #ph_idx_sr =  defs.get_phid_idx( 'all' )
@@ -344,7 +344,6 @@ def make_signal_fits( sampMan, sel_base, eta_cuts, plot_var, xvar, binning, work
             canv = fitManager.draw( subplot = "pull", paramlayout = (0.15,0.5,0.82), useOldsetup = True)
 
             canv.Print("%s/%s.pdf"%(plots_dir, full_suffix) )
-            canv.Print("%s/%s.C"%(plots_dir, full_suffix) )
             print "************"
             print " RooFitResult Status: %d"%fitManager.roofitresult.status()
             print "************"

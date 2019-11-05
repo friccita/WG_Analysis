@@ -98,9 +98,6 @@ class RunModule : public virtual RunModuleBase {
         TH2F *_sfhist_el_id;
         TH2F *_sfhist_el_recohighpt;
         TH2F *_sfhist_el_recolowpt;
-        TH2F *_sfhist_el_trig;
-        TH2F *_effhist_el_trig_data;
-        TH2F *_effhist_el_trig_mc;
 
         TFile *_sffile_ph_id;
         TFile *_sffile_ph_psv;
@@ -114,7 +111,6 @@ class RunModule : public virtual RunModuleBase {
         TH1F *_sfhist_pileup_mc;
 
 	int _year_mu;
-	int _year_el;
 	int _year_ph;
 
 };
