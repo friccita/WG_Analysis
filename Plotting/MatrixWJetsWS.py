@@ -25,8 +25,8 @@ _TREENAME = 'UMDNTuple/EventTree'
 _FILENAME = 'tree.root'
 _XSFILE   = 'cross_sections/photon16.py'
 _LUMI     = 36000
-_BASEPATH = '/afs/cern.ch/work/f/friccita/WG_Analysis/Plotting/LimitSetting/'
-#_BASEPATH = '/home/friccita/WGamma/WG_Analysis/Plotting/LimitSetting/'
+#_BASEPATH = '/afs/cern.ch/work/f/friccita/WG_Analysis/Plotting/LimitSetting/'
+_BASEPATH = '/home/friccita/WGamma/WG_Analysis/Plotting/LimitSetting/'
 _SAMPCONF = 'Modules/Resonance2016.py'
 
 
@@ -104,7 +104,7 @@ def main() :
 
                 ws.writeToFile( '%s/workspace_%s.root' %( options.outputDir, fileid ), recreate )
 
-        outputFile = ROOT.TFile('%s/outfile_matrix_LepGam_NLO_PhOlap_notIPFS_%s.root' %( options.outputDir, wjets.GetName() ),'recreate') #set pt cut here
+        outputFile = ROOT.TFile('%s/outfile_matrix_LepLep_NLO_PhOlap_%s.root' %( options.outputDir, wjets.GetName() ),'recreate') #set pt cut here
         for key, can in sampManMuMu.outputs.iteritems() :
             can.Write( '%s' %(key) )
         for can in sampManElEl.outputs.iteritems() :
@@ -129,8 +129,8 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     ph_pt_25To40 = 'ph_pt[0] > 25. && ph_pt[0] < 40.'
     ph_pt_40To70 = 'ph_pt[0] > 40. && ph_pt[0] < 70.'
     ph_pt_70Up = 'ph_pt[0] > 70.'
-    ph_pt_40Up = 'ph_pt[0] > 40. && ph_passMedium[0] && ph_passEleVeto[0]'
-    ph_sel_preid = 'ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0]'
+    ph_pt_40Up = 'ph_pt[0] > 40.'
+    ph_sel_preid = ' ph_passEleVeto[0] && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0]'
     ph_sel_chiso_incl = 'ph_passSIEIEMedium[0]'
     ph_sel_sieie_incl = 'ph_passChIsoCorrMedium[0]'
 
@@ -185,8 +185,8 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     # and whatever else you want...
     #---------------------------------------
 
-    binning_sigIEIE = (50,0.,0.05)
-    binning_chIso = (90,0.,45.)
+    binning_sigIEIE = (30,0.,0.03)
+    binning_chIso = (100,0.,10.)
     binning_pt = (300,0.,750.)
     binning_sigIEIE_FR = [0.,0.01022,0.1]
     binning_chIso_FR = [0.,0.441,5.]
@@ -202,6 +202,7 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     vtx_var = 'vtx_n'
     pu_var = 'pu_n'
     mt_var = 'mt_res'
+    met_var = 'met_pt'
     mu_pt_var = 'mu_pt_rc[0]'
 
     hist_real_sigmaIEIE = clone_sample_and_draw( sampMan, sample, sigIEIE_var, real_sel_sieie_incl, binning_sigIEIE )
@@ -217,11 +218,12 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     #hist_fake_chIso_FR = clone_sample_and_draw( sampMan, sample, chIso_var, fake_sel_chiso_incl, binning_chIso_FR )
 
     hist_mll = clone_sample_and_draw( sampMan, sample, mll_var, zpeak_sel, binning_mll )
-    hist_mll_smp = clone_sample_and_draw( sampMan, sample, mll_var, sel_smp_zpeak, binning_mll )
-    hist_dr = clone_sample_and_draw( sampMan, sample, dr_var, predR_sel, binning_dr )
+    #hist_mll_smp = clone_sample_and_draw( sampMan, sample, mll_var, sel_smp_zpeak, binning_mll )
+    hist_dr_nosieie = clone_sample_and_draw( sampMan, sample, dr_var, real_sel_sieie_incl, binning_dr )
+    hist_dr_nochiso = clone_sample_and_draw( sampMan, sample, dr_var, real_sel_chiso_incl, binning_dr )
     hist_nvtx = clone_sample_and_draw( sampMan, sample, vtx_var, zpeak_sel, binning_vtx )
     hist_mt = clone_sample_and_draw( sampMan, sample, mt_var, zpeak_sel, binning_mt )
-    hist_mupt = clone_sample_and_draw( sampMan, sample, mu_pt_var, zpeak_sel, binning_mt )
+    hist_met = clone_sample_and_draw( sampMan, sample, met_var, zpeak_sel, binning_mt )
     hist_npu = clone_sample_and_draw( sampMan, sample, pu_var, zpeak_sel, binning_vtx )
     
     sampMan.outputs['%s_sigmaIEIE_real_%s' %(sample,suffix)] = hist_real_sigmaIEIE
@@ -235,12 +237,13 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     #sampMan.outputs['%s_chIso_fake_FR_%s' %(sample,suffix)] = hist_fake_chIso_FR
 
     sampMan.outputs['%s_mll_%s' %(sample,suffix)] = hist_mll
-    sampMan.outputs['%s_mllsmp_%s' %(sample,suffix)] = hist_mll_smp
-    sampMan.outputs['%s_dr_%s' %(sample,suffix)] = hist_dr
+    #sampMan.outputs['%s_mllsmp_%s' %(sample,suffix)] = hist_mll_smp
+    sampMan.outputs['%s_dr_nosieieie_%s' %(sample,suffix)] = hist_dr_nosieie
+    sampMan.outputs['%s_dr_nochiso_%s' %(sample,suffix)] = hist_dr_nochiso
     sampMan.outputs['%s_vtxn_%s' %(sample,suffix)] = hist_nvtx
     sampMan.outputs['%s_mtres_%s' %(sample,suffix)] = hist_mt
-    sampMan.outputs['%s_mu_pt_%s' %(sample,suffix)] = hist_mupt
     sampMan.outputs['%s_pun_%s' %(sample,suffix)] = hist_npu
+    sampMan.outputs['%s_met_%s' %(sample,suffix)] = hist_met
 
 
 
