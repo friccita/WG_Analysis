@@ -23,11 +23,11 @@ options = parser.parse_args()
 
 _TREENAME = 'UMDNTuple/EventTree'
 _FILENAME = 'tree.root'
-_XSFILE   = 'cross_sections/photon15.py'
+_XSFILE   = 'cross_sections/photon16.py'
 _LUMI     = 36000
-_BASEPATH = '/afs/cern.ch/work/f/friccita/WG_Analysis/Plotting/LimitSetting/'
-#_BASEPATH = '/home/friccita/WGamma/WG_Analysis/Plotting/LimitSetting/'
-_SAMPCONF = 'Modules/Resonance.py'
+#_BASEPATH = '/afs/cern.ch/work/f/friccita/WG_Analysis/Plotting/LimitSetting/'
+_BASEPATH = '/home/friccita/WGamma/WG_Analysis/Plotting/LimitSetting/'
+_SAMPCONF = 'Modules/Resonance2016.py'
 
 
 def get_cut_defaults( shape_var, ieta ) :
@@ -47,8 +47,8 @@ if options.outputDir is not None :
 
 def main() :
 
-    sampManMuNoG = SampleManager( options.baseDirMuNoG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI )
-    sampManElNoG = SampleManager( options.baseDirElNoG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI )
+    sampManMuNoG = SampleManager( options.baseDirMuNoG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName="weighthist" )
+    sampManElNoG = SampleManager( options.baseDirElNoG, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName="weighthist" )
 
     sampManMuNoG.ReadSamples( _SAMPCONF )
     sampManElNoG.ReadSamples( _SAMPCONF )
@@ -115,15 +115,15 @@ def main() :
                                     
                 print 'MC background k-factor calculation'
                 make_kfactor_calc( sampManMuNoG, 'Wjets', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
-                make_kfactor_calc( sampManMuNoG, 'Wgamma', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
+                make_kfactor_calc( sampManMuNoG, 'WGamma', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
                 make_kfactor_calc( sampManMuNoG, 'Zgamma', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
                 make_kfactor_calc( sampManMuNoG, 'AllTop', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
                 make_kfactor_calc( sampManMuNoG, 'Z+jets', seldic['selection'], False, suffix='wjets_%s' %(ch), workspace=wjets)
                 make_kfactor_calc( sampManMuNoG, 'Data', seldic['selection'], True, suffix='wjets_%s' %(ch), workspace=wjets)
 
-
+    print 'Debug: got to the end of histograms'
     if options.outputDir is not None :
-
+        print 'Debug:',options.outputDir
         wjets.writeToFile( '%s/outfile_kfactor.root' %( options.outputDir ) )
 
         for fileid, ws_list in workspaces_to_save.iteritems() :
@@ -134,8 +134,9 @@ def main() :
                     recreate = False
 
                 ws.writeToFile( '%s/workspace_%s.root' %( options.outputDir, fileid ), recreate )
-
+        
         outputFile = ROOT.TFile('%s/outfile_kfactor.root' %( options.outputDir ),'recreate')
+        print 'Debug: made output file'
         for key, can in sampManMuNoG.outputs.iteritems() :
             can.Write( '%s' %(key) )
         for key, can in sampManElNoG.outputs.iteritems() :
@@ -149,7 +150,6 @@ def main() :
 
 
 
-#def make_kfactor_calc( sampMan, sample, sel_base, plot_var, binning, suffix='', workspace=None) :
 def make_kfactor_calc( sampMan, sample, sel_base, isdata=False, suffix='', workspace=None) :
 
     #---------------------------------------
@@ -159,6 +159,7 @@ def make_kfactor_calc( sampMan, sample, sel_base, isdata=False, suffix='', works
     #w_selection = 'mt_lep_met > 50. && mt_lep_met < 100. && mu_pt[0] > 50.'
     w_selection = 'mt_lep_met > 50. && mu_pt[0] > 50. && mu_hasTrigMatch[0] && mu_eta[0] < 2.4 && mu_eta[0] > -2.4 && mu_passTight[0]'
     smpvj_selection = 'mu_pt30_n==1 && mu_n==1 && mu_eta[0] > -2.4 && mu_eta[0] < 2.4 && mu_hasTrigMatch[0] && mu_passTight[0] && mt_lep_met > 50. && leadjet_pt > 30. && jet_n >= 1 && jet_eta[0] > -2.4 && jet_eta[0] < 2.4 && ph_n == 0'
+    markus_sel = '( isData ? isData : PUWeight * NLOWeight * el_trigSF * el_idSF * el_recoSF * ph_idSF * ph_psvSF * ph_csevSF * mu_trigSF * mu_isoSF * mu_trkSF * mu_idSF * Alt$(prefweight,1) ) * ( mu_pt30_n==1 && mu_n==1 && el_n==0 && mu_passTight[0] )'
     #---------------------------------------
     # Add eta cuts, (IsEB, IsEE)
     #---------------------------------------
@@ -202,33 +203,37 @@ def make_kfactor_calc( sampMan, sample, sel_base, isdata=False, suffix='', works
     #---------------------------------------
     binning_leadjet_pt = (128, 0., 640.)
     jet_var = 'leadjet_pt'
-    hist_leadjetpt = clone_sample_and_draw( sampMan, sample, jet_var, smp_sel, binning_leadjet_pt )
+    hist_leadjetpt = clone_sample_and_draw( sampMan, sample, jet_var, smpvj_selection, binning_leadjet_pt )
     sampMan.outputs['%s_leadjetpt_%s' %(sample,suffix)] = hist_leadjetpt
 
-    binning_mt = (100,0.,800.)
+    binning_mt = (40,0.,800.)
     mt_var = 'mt_lep_met'
-    hist_mtW = clone_sample_and_draw( sampMan, sample, mt_var, smp_sel, binning_mt )
+    hist_mtW = clone_sample_and_draw( sampMan, sample, mt_var, smpvj_selection, binning_mt )
     sampMan.outputs['%s_mtmumet_%s' %(sample,suffix)] = hist_mtW
+
+    mt_res_var = 'mt_res'
+    hist_mtres = clone_sample_and_draw( sampMan, sample, mt_res_var, smpvj_selection, binning_mt )
+    sampMan.outputs['%s_mtres_%s' %(sample,suffix)] = hist_mtres
 
     binning_met = (100,0.,1000.)
     met_var = 'met_pt'
-    hist_met = clone_sample_and_draw( sampMan, sample, met_var, smp_sel, binning_met )
+    hist_met = clone_sample_and_draw( sampMan, sample, met_var, smpvj_selection, binning_met )
     sampMan.outputs['%s_met_%s' %(sample,suffix)] = hist_met
 
-    binning_jetn = (10,0.,10.)
-    jetn_var = 'jet_n'
-    hist_jetn = clone_sample_and_draw( sampMan, sample, jetn_var, smp_sel, binning_jetn )
-    sampMan.outputs['%s_jetn_%s' %(sample,suffix)] = hist_jetn
+    #binning_jetn = (10,0.,10.)
+    #jetn_var = 'jet_n'
+    #hist_jetn = clone_sample_and_draw( sampMan, sample, jetn_var, smpvj_selection, binning_jetn )
+    #sampMan.outputs['%s_jetn_%s' %(sample,suffix)] = hist_jetn
 
-    binning_wpt = (100,0.,500.)
-    wpt_var = 'recoW_pt'
-    hist_wpt = clone_sample_and_draw( sampMan, sample, wpt_var, smp_sel, binning_wpt )
-    sampMan.outputs['%s_wpt_%s' %(sample,suffix)] = hist_wpt
+    #binning_wpt = (50,0.,500.)
+    #wpt_var = 'recoW_pt'
+    #hist_wpt = clone_sample_and_draw( sampMan, sample, wpt_var, smpvj_selection, binning_wpt )
+    #sampMan.outputs['%s_wpt_%s' %(sample,suffix)] = hist_wpt
 
-    binning_wmass = (100,0.,500.)
-    wmass_var = 'RecoWMass'
-    hist_wmass = clone_sample_and_draw( sampMan, sample, wmass_var, smp_sel, binning_wmass )
-    sampMan.outputs['%s_wmass_%s' %(sample,suffix)] = hist_wmass
+    #binning_wmass = (50,0.,500.)
+    #wmass_var = 'RecoWMass'
+    #hist_wmass = clone_sample_and_draw( sampMan, sample, wmass_var, smpvj_selection, binning_wmass )
+    #sampMan.outputs['%s_wmass_%s' %(sample,suffix)] = hist_wmass
 
 
 def clone_sample_and_draw( sampMan, samp, var, sel, binning ) :

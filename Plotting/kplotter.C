@@ -13,17 +13,14 @@ using namespace std;
 void kplotter()
 { // beginning
 
-  TString infilename("Plots/Resonance/Plots_2019_04_15/WJetsWS/outfile_kfactor.root");
+  TString infilename("Plots/Resonance/Plots_2019_12_08/WJetsWS/outfile_kfactor.root");
   TFile* infile = new TFile(infilename,"READ");
 
   TString dataprefix("Data_");
-  TString wgamprefix("Wgamma_");
+  TString wgamprefix("WGamma_");
   TString ttbarprefix("AllTop_");
   TString zjetsprefix("Z+jets_");
   TString zgamprefix("Zgamma_");
-  //TString wjetsprefix("WjetsSMPIncl_");
-  //TString wjetsprefix("WjetsSMPPt_");
-  //TString wjetsprefix("WjetsSMPJet_");
   TString wjetsprefix("Wjets_");
 
   vector<TString> sampleprefix;
@@ -34,9 +31,11 @@ void kplotter()
   sampleprefix.push_back(wjetsprefix);
 
   //TString histsuffix("wpt_wjets_mu");
-  TString histsuffix("wmass_wjets_mu");
+  //TString histsuffix("wmass_wjets_mu");
   //TString histsuffix("leadjetpt_wjets_mu");
   //TString histsuffix("mtmumet_wjets_mu");
+  //TString histsuffix("mtres_wjets_mu");
+  TString histsuffix("met_wjets_mu");
   //TString histsuffix("jetn_wjets_mu");
 
 
@@ -53,8 +52,10 @@ void kplotter()
   TH1F* histdata = static_cast<TH1F*>(infile->Get(histname_data)->Clone());
   //histdata->GetXaxis()->SetTitle("Reco W p_{T} (GeV)");
   //histdata->GetXaxis()->SetTitle("Reco W mass (GeV)");
-  histdata->GetXaxis()->SetTitle("Leading jet p_{T} (GeV)");
+  //histdata->GetXaxis()->SetTitle("Leading jet p_{T} (GeV)");
   //histdata->GetXaxis()->SetTitle("m_{T}(#mu,MET) (GeV)");
+  //histdata->GetXaxis()->SetTitle("m_{T} (GeV)");
+  histdata->GetXaxis()->SetTitle("MET (GeV)");
   //histdata->GetXaxis()->SetTitle("Jet multiplicity");
   histdata->GetYaxis()->SetTitle("Events");
 
@@ -86,7 +87,7 @@ void kplotter()
    } // loop over MC samples
 
   cout << "Total data events: " << histdata->Integral() << endl;
-  cout << "Total MC events: " << histmc->Integral();
+  cout << "Total MC events: " << histmc->Integral() << endl;
   histmc->SetFillStyle(3352);
   histmc->SetFillColor(kBlue);
 
@@ -94,15 +95,15 @@ void kplotter()
   TH1F* histratio = static_cast<TH1F*>(infile->Get(histname_data)->Clone());
   histratio->Divide(histmc);
   //histratio->GetXaxis()->SetTitle("Reco W p_{T} (GeV)");
-  histratio->GetXaxis()->SetTitle("Reco W mass (GeV)");
-  //histratio->GetXaxis()->SetTitle("Leading jet p_{T} (GeV)");
+  //histratio->GetXaxis()->SetTitle("Reco W mass (GeV)");
+  histratio->GetXaxis()->SetTitle("Leading jet p_{T} (GeV)");
   //histratio->GetXaxis()->SetTitle("m_{T}(#mu,MET) (GeV)");
   //histratio->GetXaxis()->SetTitle("Jet multiplicity");
   histratio->GetYaxis()->SetTitle("Data/MC");
 
   
-  double kfactor = histdata->Integral()/histmc->Integral();
-  cout << "k-factor = " << kfactor << endl;
+  double ratio = histdata->Integral()/histmc->Integral();
+  cout << "data/MC = " << ratio << endl;
 
   TCanvas* canv = new TCanvas("dataVsMC_kfactor","datavsMC_kfactor",600,600);
   canv->cd();

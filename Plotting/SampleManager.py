@@ -2866,7 +2866,7 @@ class SampleManager :
 
             if sample.hist is not None :
                 if draw_config.get_overflow():
-                    elf.AddOverflow( sample.hist )
+                    self.AddOverflow( sample.hist )
                 sample.InitHist(onthefly = draw_config.get_onthefly())
 
         # Group draw parallelization

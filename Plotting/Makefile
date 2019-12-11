@@ -1,15 +1,15 @@
 ### ATTENTION: Set OUTPUTMAIN to the folder in your Plotting directory where you want to save your output
-OUTPUTMAIN=~/WGamma/WG_Analysis/Plotting/Plots/Resonance/Plots_2019_09_28
+OUTPUTMAIN=~/WGamma/WG_Analysis/Plotting/Plots/Resonance/Plots_2019_12_08
 ### ATTENTION: Make sure that these DIR_* strings specify the directories containing the processed ntuples that you want to run over
 DIR_MUG=/data/users/friccita/WGammaNtuple/LepGamma_mug_2019_04_11/WithSF
 DIR_ELG=/data/users/friccita/WGammaNtuple/LepGamma_elg_2019_04_11/WithSF
 #DIR_MUGNoId=/data/users/friccita/WGammaNtuple/LepGammaNoPhId_mug_2019_03_17/WithSF
 #DIR_ELGNoId=/data/users/friccita/WGammaNtuple/LepGammaNoPhId_elg_2019_03_17/WithSF
-DIR_MUGNoId=/data/users/friccita/WGammaNtuple/LepGammaNoPhId_mug_2019_07_12/WithSF
-DIR_ELGNoId=/data/users/friccita/WGammaNtuple/LepGammaNoPhId_elg_2019_07_12/WithSF
-DIR_MU=/data/users/friccita/WGammaNtuple/SingleLepNoPhId_mu_2019_04_11/WithSF
-DIR_EL=/data/users/friccita/WGammaNtuple/SingleLepNoPhId_el_2019_04_11/WithSF
-DIR_MUMU=/data/users/friccita/WGammaNtuple/LepLep_mumu_2019_09_25/WithSF
+DIR_MUGNoId=/data/users/friccita/WGammaNtuple2016/LepGammaNoPhId_mug_2019_11_26/WithSF
+DIR_ELGNoId=/data/users/friccita/WGammaNtuple2016/LepGammaNoPhId_elg_2019_11_26/WithSF
+DIR_MU=/data/users/friccita/WGammaNtuple2016/SingleLep_mu_2019_12_04/WithSF
+DIR_EL=/data/users/friccita/WGammaNtuple2016/SingleLep_el_2019_12_04/WithSF
+DIR_MUMU=/data/users/friccita/WGammaNtuple2016/LepLep_mumu_2019_11_05/WithSF
 #DIR_MUMU=/data/users/friccita/WGammaNtuple/LepGammaNoPhId_mug_2019_09_04/WithSF
 DIR_ELEL=/data/users/friccita/WGammaNtuple/LepLep_elel_2019_04_11/WithSF
 
@@ -35,7 +35,7 @@ plots :
 
 wjets : 
 
-	python MakeWJetsWS.py --baseDirMuNoG ${DIR_MUGNoId} --baseDirElGNoId ${DIR_ELGNoId} --doClosure  --outputDir ${OUTPUTMAIN}/WJetsWS
+	python MakeWJetsWS.py --baseDirMuGNoId ${DIR_MUGNoId} --baseDirElGNoId ${DIR_ELGNoId} --doClosure  --outputDir ${OUTPUTMAIN}/WJetsWS
 	#python MakeWJetsWS.py --baseDirMuGNoId ${DIR_MUGNoId} --baseDirElGNoId ${DIR_ELGNoId} --outputDir ${OUTPUTMAIN}/WJetsWS
 
 kfactor:
@@ -44,6 +44,9 @@ kfactor:
 
 matrix:
 	python MatrixWJetsWS.py --baseDirMuMu ${DIR_MUMU} --baseDirElEl ${DIR_ELEL} --outputDir ${OUTPUTMAIN}/WJetsWS
+
+valmatrix:
+	python MatrixValidationWS.py --baseDirMu ${DIR_MUGNoId} --baseDirEl ${DIR_ELGNoId} --outputDir ${OUTPUTMAIN}/WJetsWS
 
 signal : 
 

@@ -57,9 +57,9 @@ if options.test :
 
 ### ATTENTION! Specify the output directory where the processed ntuple output will be saved.
 
-output_base = '/data2/users/kakw/Resonances%i/' %options.year
+output_base = '/data/users/friccita/WGammaNtuple%i/' %options.year
 #output_base = '/afs/cern.ch/work/k/kawong/Resonances%i/' %options.year
-jobtag = '_2019_08_22_beta'
+jobtag = '_2019_11_26'
 
 #version = 'UMDNTuple_0620'
 version_sig = ''
@@ -347,24 +347,24 @@ args_nlo = { 'ApplyNLOWeight' : 'true' }#, 'doFHPFS' : 'true' }
 ### ATTENTION! Choose (uncomment and modify as necessary) the type of ntuple you want to make. Single lepton, dilepton, single lepton plus gamma, etc.
 configs = [
 
-    #{
-    #    'module' : 'Conf%i.py' %options.year,
-    #    'args'   : { 'function' : 'make_final_mu', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'False' },
-    #    'args_tag_NLO' : args_nlo,
-    #    'input'  : '',
-    #    'output' : output_base+'SingleLep_mu_2019_03_17',
-    #    'tag'    : 'mu',
-    #    'dataset': 'SingleMuon',
-    #},
-    #{
-    #    'module' : 'Conf%i.py' %options.year,
-    #    'args'   : { 'function' : 'make_final_el', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'eleVeto' : 'None', 'phot_vars' : 'False'},
-    #    'args_tag_NLO' : args_nlo,
-    #    'input'  : '' ,
-    #    'output' : output_base+'SingleLep_el_2019_03_17',
-    #    'tag'    : 'el',
-    #    'dataset': 'SingleElectron',
-    #},
+    {
+        'module' : 'Conf%i.py' %options.year,
+        'args'   : { 'function' : 'make_final_mu', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'True', 'phot_id' : 'None', 'unblind' : 'True'},
+        'args_tag_NLO' : args_nlo,
+        'input'  : '',
+        'output' : output_base+'SingleLep_mu_2019_12_11',
+        'tag'    : 'mu',
+        'dataset': 'SingleMuon',
+    },
+    {
+        'module' : 'Conf%i.py' %options.year,
+        'args'   : { 'function' : 'make_final_el', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'eleVeto' : 'None', 'phot_vars' : 'True', 'phot_id' : 'None', 'unblind' : 'True'},
+        'args_tag_NLO' : args_nlo,
+        'input'  : '' ,
+        'output' : output_base+'SingleLep_el_2019_12_11',
+        'tag'    : 'el',
+        'dataset': 'SingleElectron',
+    },
    #{
    #     'module' : 'Conf%i.py' %options.year,
    #     'args'   : { 'function' : 'make_final_mug', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 15 ', 'phot_vars' : 'True' },
@@ -422,24 +422,24 @@ configs = [
     #    'tag'    : 'elgnov',
     #    'dataset': 'SingleElectron',
     #},
-    {
-        'module' : 'Conf%i.py' %options.year,
-        'args'   : { 'function' : 'make_final_mug', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'True', 'phot_id' : 'None'},#, 'unblind' : 'True' },
-        'args_tag_NLO' : args_nlo,
-        'input'  : '',
-        'output' : output_base+'LepGammaNoPhId_mug'+jobtag,
-        'dataset': 'SingleMuon',
-        'tag'    : 'muglph',
-    },
-#    {
-#        'module' : 'Conf%i.py' %options.year,
-#        'args'   : { 'function' : 'make_final_elg', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'True', 'phot_id' : 'None',},# 'unblind' : 'True' },
-#        'args_tag_NLO' : args_nlo,
-#        'input'  : '',
-#        'output' : output_base+'LepGammaNoPhId_elg'+jobtag,
-#        'dataset': 'SingleElectron',
-#        'tag'    : 'elglph',
-#    },
+    #{
+    #    'module' : 'Conf%i.py' %options.year,
+    #    'args'   : { 'function' : 'make_final_mug', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'True', 'phot_id' : 'None'},#, 'unblind' : 'True' },
+    #    'args_tag_NLO' : args_nlo,
+    #    'input'  : '',
+    #    'output' : output_base+'LepGammaNoPhId_mug'+jobtag,
+    #    'dataset': 'SingleMuon',
+    #    'tag'    : 'muglph',
+    #},
+    #{
+    #    'module' : 'Conf%i.py' %options.year,
+    #    'args'   : { 'function' : 'make_final_elg', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 10 ', 'phot_vars' : 'True', 'phot_id' : 'None',},# 'unblind' : 'True' },
+    #    'args_tag_NLO' : args_nlo,
+    #    'input'  : '',
+    #    'output' : output_base+'LepGammaNoPhId_elg'+jobtag,
+    #    'dataset': 'SingleElectron',
+    #    'tag'    : 'elglph',
+    #},
     #{
     #    'module' : 'Conf%i.py' %options.year,
     #    'args'   : { 'function' : 'make_final_mug', 'mu_pt' : ' > 10 ', 'el_pt' : ' > 10 ' , 'ph_pt' : ' > 30 ', 'muphtrig' : 'True' },
