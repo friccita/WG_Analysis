@@ -56,10 +56,20 @@ def main() :
     sampManMu.outputs = {}
     sampManEl.outputs = {}
 
+    #Analysis signal region
+    #val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && el_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 80 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 25 &&  (mt_res > 200 && mt_res < 2000 )'
+    #val_sel_el = 'el_pt30_n==1 && el_n==1 && mu_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 80 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 25 &&  (mt_res > 200 && mt_res < 2000 )'
 
-    val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && el_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 80 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && ph_passChIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 25 &&  (mt_res > 200 && mt_res < 2000 )'
-    val_sel_el = 'el_pt30_n==1 && el_n==1 && mu_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 80 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && ph_passChIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 25 &&  (mt_res > 200 && mt_res < 2000 )'
+    #Wgamma enriched
+    #val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && el_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 25 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 70 && mt_lep_met > 30. && (m_lep_ph < 75 || m_lep_ph > 105)'
+    #val_sel_el = 'el_pt30_n==1 && el_n==1 && mu_n==0  && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 25 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && met_pt > 70 && mt_lep_met > 30. && (m_lep_ph < 75 || m_lep_ph > 105)'
 
+    #Zgamma enriched
+    val_sel_mu = 'mu_n==2 && m_ll < 130. && m_ll > 50. && mu_pt_rc[0] > 52. && mu_pt_rc[1] > 30. && mu_hasTrigMatch[0] && mu_passTight[0] && mu_hasTrigMatch[1] && mu_passTight[1] && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 40 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0] && (ph_pt[0] > 40.*m_llph/150.)'
+    val_sel_el = ''
+
+    #W+Jets enriched
+    val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && mu_eta[0] > -2.4 && mu_eta[0] < 2.4 && mu_hasTrigMatch[0] && mu_passTight[0] && mt_lep_met > 50. && leadjet_pt > 30. && jet_n >= 1 && jet_eta[0] > -2.4 && jet_eta[0] < 2.4 && jet_CSVMedium_n == 0 && ph_n == 0'
 
     #eta_cuts = ['EB', 'EE']
     eta_cuts = ['EB']
@@ -84,31 +94,40 @@ def main() :
         
         for ch, seldic in chdic.iteritems() : 
             for et in eta_cuts :
-                print 'Jet fake rate: MC'
-                make_wjets_matrix( sampManMu, 'Wjets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,seltag ) )
+                if ch == 'mu':
+                    print 'Jet fake rate: MC - %s' %(ch)
+#                    make_wjets_matrix( sampManMu, 'Wjets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+#                    make_wjets_matrix( sampManMu, 'WGamma', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+#                    make_wjets_matrix( sampManMu, 'AllTop', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                    make_wjets_matrix( sampManMu, 'Zgamma', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                    make_wjets_matrix( sampManMu, 'Z+jets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
                 
-                print 'Jet fake rate: data'
-                make_wjets_matrix( sampManMu, 'Data', seldic['selection'], et, True, suffix='data_%s_%s' %(et,seltag))
-
+                    print 'Jet fake rate: data - %s' %(ch)
+                    make_wjets_matrix( sampManMu, 'Data', seldic['selection'], et, True, suffix='data_%s_%s' %(et,ch))
+                if ch == 'el':
+                    print 'Jet fake rate: MC - %s' %(ch)
+                    #make_wjets_matrix( sampManEl, 'Wjets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                
+                    print 'Jet fake rate: data - %s' %(ch)
+                    #make_wjets_matrix( sampManEl, 'Data', seldic['selection'], et, True, suffix='data_%s_%s' %(et,ch))
 
     if options.outputDir is not None :
 
         wjets.writeToFile( '%s/%s.root' %( options.outputDir,wjets.GetName() ) )
 
-        for fileid, ws_list in workspaces_to_save.iteritems() :
-            for idx, ws in enumerate(ws_list) :
-                if idx == 0 :
-                    recreate = True
-                else  :
-                    recreate = False
-
-                ws.writeToFile( '%s/workspace_%s.root' %( options.outputDir, fileid ), recreate )
+        #for fileid, ws_list in workspaces_to_save.iteritems() :
+        #    for idx, ws in enumerate(ws_list) :
+        #        if idx == 0 :
+        #            recreate = True
+        #        else  :
+        #            recreate = False
+        #        ws.writeToFile( '%s/workspace_%s.root' %( options.outputDir, fileid ), recreate )
 
         outputFile = ROOT.TFile('%s/outfile_matrixFR_%s.root' %( options.outputDir, wjets.GetName() ),'recreate')
         for key, can in sampManMu.outputs.iteritems() :
             can.Write( '%s' %(key) )
-        for can in sampManEl.outputs.iteritems() :
-            can.Write( '%s' %(key) )
+        #for key, can in sampManEl.outputs.iteritems() :
+        #    can.Write( '%s' %(key) )
 
 
 
@@ -124,19 +143,29 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     ph_sel_T = 'ph_passSIEIEMedium[0]'
     ph_sel_L = '!ph_passSIEIEMedium[0]'
 
+
     chiso_fail_sel = 'ph_chIsoCorr[0] > 4 && ph_chIsoCorr[0] < 10'
+    chiso_pass_sel = 'ph_chIsoCorr[0] < 0.441'
 
 
     #---------------------------------------
     # put the cuts together
     #---------------------------------------
 
-    myweight = '( isData ? isData : PUWeight * NLOWeight * el_trigSF * el_idSF * el_recoSF * ph_idSF * ph_psvSF * ph_csevSF * mu_trigSF * mu_isoSF * mu_trkSF * mu_idSF)'# * Alt$(prefweight,1) )'
 
-    full_sel_T = ' && '.join( [sel_base, ph_sel_T] )
+    #myweight = '( isData ? isData : PUWeight * NLOWeight * el_trigSF * el_idSF * el_recoSF * ph_idSF * ph_psvSF * ph_csevSF * mu_trigSF * mu_isoSF * mu_trkSF * mu_idSF  * Alt$(prefweight,1))'
+
+    myweight = ''
+    if isdata:
+        myweight = 'isData'
+    else:
+        myweight = '(PUWeight * NLOWeight * el_trigSF * el_idSF * el_recoSF * ph_idSF * ph_psvSF * ph_csevSF * mu_trigSF * mu_isoSF * mu_trkSF * mu_idSF  * Alt$(prefweight,1))'
+
+
+    full_sel_T = ' && '.join( [sel_base, ph_sel_T, chiso_pass_sel] )
     full_sel_T = '(' + full_sel_T + ')*' + myweight
 
-    full_sel_L = ' && '.join( [sel_base, ph_sel_L] )
+    full_sel_L = ' && '.join( [sel_base, ph_sel_L, chiso_pass_sel] )
     full_sel_L = '(' + full_sel_L + ')*' + myweight
 
     if workspace is None :
@@ -159,16 +188,16 @@ def make_wjets_matrix( sampMan, sample, sel_base, eta_cut, isdata=False, suffix=
     mt_var = 'mt_res'
 
     hist_T_sigmaIEIE = clone_sample_and_draw( sampMan, sample, sigIEIE_var, full_sel_T, binning_sigIEIE )
-    hist_T_mt = clone_sample_and_draw( sampMan, sample, mt_var, full_sel_T, binning_mt )
+    #hist_T_mt = clone_sample_and_draw( sampMan, sample, mt_var, full_sel_T, binning_mt )
 
     hist_L_sigmaIEIE = clone_sample_and_draw( sampMan, sample, sigIEIE_var, full_sel_L, binning_sigIEIE )
-    hist_L_mt = clone_sample_and_draw( sampMan, sample, mt_var, full_sel_L, binning_mt )
+    #hist_L_mt = clone_sample_and_draw( sampMan, sample, mt_var, full_sel_L, binning_mt )
 
     sampMan.outputs['%s_sigmaIEIE_T_%s' %(sample,suffix)] = hist_T_sigmaIEIE
     sampMan.outputs['%s_sigmaIEIE_L_%s' %(sample,suffix)] = hist_L_sigmaIEIE
 
-    sampMan.outputs['%s_mt_T_%s' %(sample,suffix)] = hist_T_mt
-    sampMan.outputs['%s_mt_L_%s' %(sample,suffix)] = hist_L_mt
+    #sampMan.outputs['%s_mt_T_%s' %(sample,suffix)] = hist_T_mt
+    #sampMan.outputs['%s_mt_L_%s' %(sample,suffix)] = hist_L_mt
 
 
 

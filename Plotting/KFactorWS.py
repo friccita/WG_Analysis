@@ -190,7 +190,7 @@ def make_kfactor_calc( sampMan, sample, sel_base, isdata=False, suffix='', works
     almostfull_sel = ' && '.join( [sel_base, w_selection, jet_non_selection ] )
     almostfull_sel = '(' + almostfull_sel + ')*' + myweight
 
-    smp_sel = '(' + smpvj_selection + ')*' + myweight
+    smpvj_selection = '(' + smpvj_selection + ')*' + myweight
 
     if workspace is None :
         ws = ROOT.RooWorkspace( 'ws') 
