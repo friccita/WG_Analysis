@@ -18,6 +18,7 @@ parser = ArgumentParser()
 parser.add_argument('--baseDirMu',      default=None,           dest='baseDirMu',         required=False, help='Path to muon base directory')
 parser.add_argument('--baseDirEl',      default=None,           dest='baseDirEl',         required=False, help='Path to electron base directory')
 parser.add_argument('--outputDir',      default=None,           dest='outputDir',         required=False, help='Output directory to write histograms')
+parser.add_argument('--nodataFrame', default=False,action='store_false',   dest='dataFrame',   help='backwards compatibility for pre-2019 releases of ROOT')
 
 options = parser.parse_args()
 
@@ -46,9 +47,9 @@ if options.outputDir is not None :
         os.makedirs( options.outputDir )
 
 def main() :
-
-    sampManMu = SampleManager( options.baseDirMu, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist" )
-    sampManEl = SampleManager( options.baseDirEl, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist" )
+    print 'DEBUG:',options.dataFrame
+    sampManMu = SampleManager( options.baseDirMu, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist", dataFrame = options.dataFrame )
+    sampManEl = SampleManager( options.baseDirEl, _TREENAME, filename=_FILENAME, xsFile=_XSFILE, lumi=_LUMI, weightHistName = "weighthist", dataFrame = options.dataFrame )
 
     sampManMu.ReadSamples( _SAMPCONF )
     sampManEl.ReadSamples( _SAMPCONF )
@@ -69,7 +70,9 @@ def main() :
     val_sel_el = ''
 
     #W+Jets enriched
-    val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && mu_eta[0] > -2.4 && mu_eta[0] < 2.4 && mu_hasTrigMatch[0] && mu_passTight[0] && mt_lep_met > 50. && leadjet_pt > 30. && jet_n >= 1 && jet_eta[0] > -2.4 && jet_eta[0] < 2.4 && jet_CSVMedium_n == 0 && ph_n == 0'
+    #val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && mu_eta[0] > -2.4 && mu_eta[0] < 2.4 && mu_hasTrigMatch[0] && mu_passTight[0] && mt_lep_met > 50. && leadjet_pt > 30. && jet_n >= 1 && jet_eta[0] > -2.4 && jet_eta[0] < 2.4 && jet_CSVMedium_n == 0 && ph_n == 0'
+    #val_sel_mu = 'mu_pt30_n==1 && mu_n==1 && el_n==0 && mu_eta[0] < 2.4 && mu_passTight[0] && mt_lep_met > 50. && ph_n==1 && ph_IsEB[0] && ph_pt[0] > 25 && ph_passHOverEMedium[0] && ph_passNeuIsoCorrMedium[0] && ph_passPhoIsoCorrMedium[0] && !ph_hasPixSeed[0] && ph_passEleVeto[0]'
+    #val_sel_el = ''
 
     #eta_cuts = ['EB', 'EE']
     eta_cuts = ['EB']
@@ -96,9 +99,10 @@ def main() :
             for et in eta_cuts :
                 if ch == 'mu':
                     print 'Jet fake rate: MC - %s' %(ch)
-#                    make_wjets_matrix( sampManMu, 'Wjets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
-#                    make_wjets_matrix( sampManMu, 'WGamma', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
-#                    make_wjets_matrix( sampManMu, 'AllTop', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                    #make_wjets_matrix( sampManMu, 'Wjets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                    #make_wjets_matrix( sampManMu, 'WGamma', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+#                    make_wjets_matrix( sampManMu, 'QCD', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
+                    #make_wjets_matrix( sampManMu, 'AllTop', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
                     make_wjets_matrix( sampManMu, 'Zgamma', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
                     make_wjets_matrix( sampManMu, 'Z+jets', seldic['selection'], et, False, suffix='mc_%s_%s' %( et,ch ) )
                 
@@ -123,7 +127,7 @@ def main() :
         #            recreate = False
         #        ws.writeToFile( '%s/workspace_%s.root' %( options.outputDir, fileid ), recreate )
 
-        outputFile = ROOT.TFile('%s/outfile_matrixFR_%s.root' %( options.outputDir, wjets.GetName() ),'recreate')
+        outputFile = ROOT.TFile('%s/outfile_matrixFR_wjetsCR_zgamma_%s.root' %( options.outputDir, wjets.GetName() ),'recreate')
         for key, can in sampManMu.outputs.iteritems() :
             can.Write( '%s' %(key) )
         #for key, can in sampManEl.outputs.iteritems() :
