@@ -11,6 +11,7 @@ p.add_argument( '--clean'   , dest='clean'   , default=False, action='store_true
 p.add_argument( '--resubmit', dest='resubmit', default=False, action='store_true', help='Only submit missing output' )
 p.add_argument( '--local'   , dest='local'   , default=False , action='store_true', help='Run locally'                )
 p.add_argument( '--all'     , dest='all'     , default=False , action='store_true', help='Run on all available samples')
+p.add_argument( '--test', dest='test', default=False, action='store_true', help='Run a test job' )
 p.add_argument( '--year', dest='year', help='Specify the year', type=int )
 options = p.parse_args()
 
@@ -20,6 +21,14 @@ else :
     options.run = False
 
 options.batch = ( not options.local )
+
+if options.test :
+    options.nproc = 1
+    options.nFilesPerJob = 1
+    options.totalEvents = 501
+    options.nJobs = 1
+    options.batch = False
+    options.local = True
 
 ### ATTENTION! Here you specify the directory containing the ntuples that you want to run over.
 base = '/data/users/friccita/WGammaNtuple%i/' % options.year
@@ -42,17 +51,19 @@ jobs2016 = [
         #--------------------------
         JobConf(base, 'SingleMuon', isData=True, year=2016         ),
         JobConf(base, 'SingleElectron', isData=True, year=2016        ),
-        JobConf(base, 'WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhCutMax', year=2016                  ),
+        JobConf(base, 'WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016                  ),
+        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016          ),
+        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhCutMaxPhCutMin', year=2016          ),
+        JobConf(base, 'WGToLNuG_PtG-500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016          ),
+        JobConf(base, 'WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016           ),
         JobConf(base, 'WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8PhCutMax', year=2016           ),
-        #JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016          ),
-        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhCutRange', year=2016          ),
-        #JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016         ),
-        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8PhCutRange', year=2016         ),
-        #JobConf(base, 'WGToLNuG_PtG-500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016          ),
+        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016         ),
+        JobConf(base, 'WGToLNuG_PtG-130_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8PhCutMaxPhCutMin', year=2016         ),
+        JobConf(base, 'WGToLNuG_PtG-500_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016        ),
         JobConf(base, 'WGToLNuG_PtG-500_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8PhCutMin', year=2016        ),
         JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8TrueHTOlapPhOlap', year=2016     ),
-        #JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016     ),
-        #JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016        ),
+        JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016     ),
+        JobConf(base, 'WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8', year=2016        ),
         JobConf(base, 'WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016   ),
         JobConf(base, 'WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016   ),  
         JobConf(base, 'WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016   ),  
@@ -68,6 +79,8 @@ jobs2016 = [
         JobConf(base, 'TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016            ),
         JobConf(base, 'TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016 ),
         JobConf(base, 'TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8PhOlap', year=2016  ),
+        JobConf(base, 'ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1', year=2016  ),
+        JobConf(base, 'ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1', year=2016  ),
         JobConf(base, 'TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8', year=2016 ),
         JobConf( base, 'GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016      ),
         JobConf( base, 'GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016      ),
@@ -76,8 +89,8 @@ jobs2016 = [
         JobConf( base, 'GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', year=2016      ),
         JobConf( base, 'DiPhotonJets_MGG-80toInf_13TeV_amcatnloFXFX_pythia8', year=2016 ),
         JobConf( base, 'WWTo2L2Nu_13TeV-powheg', year=2016    ),
-        #JobConf(base, 'WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', year=2016  ),
-        #JobConf(base, 'WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', year=2016  ),
+        JobConf(base, 'WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', year=2016  ),
+        JobConf(base, 'WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8', year=2016  ),
 
         #JobConf(base,'MadGraphChargedResonance_WGToLNu_M1000_width5'     ),
         #JobConf(base,'MadGraphChargedResonance_WGToLNu_M1200_width5'    ),
