@@ -32,6 +32,11 @@ kfactor:
 matrix:
 	python MatrixWJetsWS.py --baseDirMuMu ${DIR_MUMU} --baseDirElEl ${DIR_ELEL} --outputDir ${OUTPUTMAIN}/WJetsWS
 
+valmatrix:
+	#python MatrixValidationWS.py --baseDirMu ${DIR_MUMU} --baseDirEl ${DIR_ELEL} --outputDir ${OUTPUTMAIN}/WJetsWS #Zgamma
+	python MatrixValidationWS.py --baseDirMu ${DIR_MUGNoId} --baseDirEl ${DIR_ELGNoId} --outputDir ${OUTPUTMAIN}/WJetsWS #Wgamma
+
+
 signal : 
 
 	python MakeSignalWS.py --baseDirMuG ${DIR_MUG} --baseDirElG ${DIR_ELG} --outputDir ${OUTPUTMAIN}/SignalWS
